@@ -5,7 +5,7 @@
     <title>WebSockets Dashboard</title>
 
     <link rel="preload" href="/css/icons.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    @vite(['resources/js/beekman/beekman.js'])
+    <link rel="preload" href="/css/websockets.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
 
     <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.min.js"></script>
