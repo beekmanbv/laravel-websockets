@@ -8,7 +8,7 @@
     <link rel="preload" href="/css/websockets.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
 
     <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.min.js"></script>
+    <script src="https://unpkg.com/vue@3"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
@@ -17,6 +17,9 @@
     </script>
 
     <style>
+        :root {
+            --color-theme: #003a75;
+        }
         .green-700 {
             background-color: #15803d;
         }
@@ -33,8 +36,8 @@
 </head>
 
 <body class="font-sans antialiased">
-<div id="app" :style="style" :class="{'dark': theme === 'dark'}">
-    <div class="flex flex-col h-screen bg-blue-50">
+<div id="app">
+    <div class="flex flex-col h-screen bg-blue-50" :class="{'dark': theme === 'dark'}">
         <header>
             <nav class="bg-theme shadow-md">
                 <!-- Primary Navigation Menu -->
@@ -92,162 +95,173 @@
         </header>
         <main class="p-6 flex flex-col space-y-2 bg-blue-50" v-if="connected" >
 
-            <div class="flex space-x-2">
-                <div class="rounded bg-white w-1/2">
-                    <div class="flex justify-between items-center my-6 px-6">
-                        <div class="font-semibold uppercase flex justify-between cursor-pointer py-6 dark:text-white" @click.prevent="showLiveStatistics = !showLiveStatistics">
-                            <span>Live statistics</span>
-                        </div>
+                <div class="flex space-x-2">
+                    <div class="rounded bg-white w-1/2">
+                        <div class="flex justify-between items-center my-6 px-6">
+                            <div class="font-semibold uppercase flex justify-between cursor-pointer py-6 dark:text-white" @click.prevent="showLiveStatistics = !showLiveStatistics">
+                                <span>Live statistics</span>
+                            </div>
 
-                        <div class="space-x-3 flex items-center">
-                            <button v-if="!autoRefresh" @click="loadChart" class="rounded bg-theme text-white px-3 py-1 mr-2">
-                                Refresh
-                            </button>
+                            <div class="space-x-3 flex items-center">
+                                <button v-if="!autoRefresh" @click="loadChart" class="rounded bg-theme text-white px-3 py-1 mr-2">
+                                    Refresh
+                                </button>
 
-                            <div class="cursor-pointer dark:text-white" @click.prevent="showLiveStatistics = !showLiveStatistics">
-                                <svg v-if="!showLiveStatistics" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
-                                </svg>
-                                <svg v-if="showLiveStatistics" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/>
-                                </svg>
+                                <div class="cursor-pointer dark:text-white" @click.prevent="showLiveStatistics = !showLiveStatistics">
+                                    <svg v-if="!showLiveStatistics" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                                    </svg>
+                                    <svg v-if="showLiveStatistics" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/>
+                                    </svg>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div
-                        id="statisticsChart"
-                        class="rounded-b"
-                        v-if="showLiveStatistics"
-                        style="width: 100%; height: 300px;"
-                    ></div>
+                        <div
+                            id="statisticsChart"
+                            class="rounded-b"
+                            v-if="showLiveStatistics"
+                            style="width: 100%; height: 300px;"
+                        ></div>
+                    </div>
+                    <div class="rounded bg-white w-1/2">
+                        <div class="flex justify-between items-center my-6 px-6">
+                            <div class="font-semibold uppercase flex justify-between cursor-pointer py-6 dark:text-white" @click.prevent="activeChannels = !activeChannels">
+                                <span>Active channels</span>
+                            </div>
+
+                            <div class="space-x-3 flex items-center">
+                                <button v-if="!autoRefresh" @click="loadChannels" class="rounded bg-theme text-white px-3 py-1 mr-2">
+                                    Refresh
+                                </button>
+                                <div class="cursor-pointer dark:text-white" @click.prevent="activeChannels = !activeChannels">
+                                    <svg v-if="!activeChannels" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                                    </svg>
+                                    <svg v-if="activeChannels" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div v-if="activeChannels" class="w-full bg-white overflow-x-auto overflow-y-auto rounded-b"
+                             style="width: 100%; height: 300px;">
+                            <table class="w-full divide-y divide-gray-200 rounded-b">
+                                <thead>
+                                <tr>
+                                    <th class="px-2 py-1 border-b border-gray-200 bg-gray-100 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider w-11/12">
+                                        Channel
+                                    </th>
+                                    <th class="px-2 py-1 border-b border-gray-200 bg-gray-100 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider text-right w-1/12">
+                                        Connections
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200" :class="{'text-white': theme === 'dark'}">
+                                <tr v-for="(channel, index) in channels" :key="index">
+                                    <td class="px-2 py-1 whitespace-no-wrap border-b border-gray-200 w-11/12 text-xs">
+                                        @{{ channel.channel }}
+                                    </td>
+                                    <td class="px-2 py-1 whitespace-no-wrap border-b border-gray-200 text-right w-1/12 text-xs">
+                                        @{{ channel.connections }}
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
-                <div class="rounded bg-white w-1/2">
-                    <div class="flex justify-between items-center my-6 px-6">
-                        <div class="font-semibold uppercase flex justify-between cursor-pointer py-6 dark:text-white" @click.prevent="activeChannels = !activeChannels">
-                            <span>Active channels</span>
-                        </div>
 
-                        <div class="space-x-3 flex items-center">
-                            <button v-if="!autoRefresh" @click="loadChannels" class="rounded bg-theme text-white px-3 py-1 mr-2">
-                                Refresh
-                            </button>
-                            <div class="cursor-pointer dark:text-white" @click.prevent="activeChannels = !activeChannels">
-                                <svg v-if="!activeChannels" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                <div class="flex flex-col my-6 rounded bg-white">
+                    <div class="font-semibold uppercase dark:text-white mb-6 flex justify-between py-6 px-6">
+                        <span>Server activity</span>
+                        <span>@{{logItemsDuringSession}} messages during session</span>
+                        <div class="flex">
+                            <span v-if="!pauseLogItems" class="cursor-pointer text-orange-500" @click.prevent="pauseLogItems = true">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                 </svg>
-                                <svg v-if="activeChannels" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/>
+                            </span>
+                            <span v-if="pauseLogItems" class="cursor-pointer text-green-500" @click.prevent="pauseLogItems = false">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                 </svg>
-                            </div>
+                            </span>
+                            <span class="cursor-pointer text-theme" @click.prevent="clear">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </span>
                         </div>
                     </div>
 
-                    <div v-if="activeChannels" class="w-full bg-white overflow-x-auto overflow-y-auto rounded-b"
-                         style="width: 100%; height: 300px;">
-                        <table class="w-full divide-y divide-gray-200 rounded-b">
+                    <div class="inline-block w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-200 rounded-b overflow-x-auto">
+                        <table class="w-full table-auto overflow-scroll divide-y divide-gray-200 rounded-b">
                             <thead>
                             <tr>
-                                <th class="px-2 py-1 border-b border-gray-200 bg-gray-100 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider w-11/12">
-                                    Channel
+                                <th class="px-2 py-1 border-b border-gray-200 bg-gray-100 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                                    Type
                                 </th>
-                                <th class="px-2 py-1 border-b border-gray-200 bg-gray-100 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider text-right w-1/12">
-                                    Connections
+                                <th class="px-2 py-1 border-b border-gray-200 bg-gray-100 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                                    Details
                                 </th>
                             </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200" :class="{'text-white': theme === 'dark'}">
-                            <tr v-for="(channel, index) in channels" :key="index">
-                                <td class="px-2 py-1 whitespace-no-wrap border-b border-gray-200 w-11/12 text-xs">
-                                    @{{ channel.channel }}
+                            <tr v-for="(log, index) in filteredLogs" :key="index">
+                                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-xs" style="width: 350px; vertical-align:top">
+                                    <div class="flex justify-between items-center">
+                                        <div class="text-left w-1/3">@{{ log.time }}</div>
+                                        <div :class="[getBadgeClass(log)]" class="w-2/3 rounded px-3 py-1 inline-block text-sm dark:text-white">
+                                            @{{ log.type }}
+                                        </div>
+                                    </div>
                                 </td>
-                                <td class="px-2 py-1 whitespace-no-wrap border-b border-gray-200 text-right w-1/12 text-xs">
-                                    @{{ channel.connections }}
+                                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-xs">
+                                    <pre class="text-xs">@{{ jsonDecode(log.details) }}</pre>
                                 </td>
                             </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
-            </div>
-
-            <div class="flex flex-col my-6 rounded bg-white">
-                <div class="font-semibold uppercase dark:text-white mb-6 flex justify-between py-6 px-6">
-                    <span>Server activity</span>
-                    <span>@{{logItemsDuringSession}} messages during session</span>
-                    <div class="flex">
-                        <span v-if="!pauseLogItems" class="cursor-pointer text-orange-500" @click.prevent="pauseLogItems = true">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                        </span>
-                        <span v-if="pauseLogItems" class="cursor-pointer text-green-500" @click.prevent="pauseLogItems = false">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                              <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
-                              <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                        </span>
-                        <span class="cursor-pointer text-theme" @click.prevent="clear">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                              <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                        </span>
-                    </div>
-                </div>
-
-                <div class="inline-block w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-200 rounded-b overflow-x-auto">
-                    <table class="w-full table-auto overflow-scroll divide-y divide-gray-200 rounded-b">
-                        <thead>
-                        <tr>
-                            <th class="px-2 py-1 border-b border-gray-200 bg-gray-100 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                                Type
-                            </th>
-                            <th class="px-2 py-1 border-b border-gray-200 bg-gray-100 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                                Details
-                            </th>
-                        </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200" :class="{'text-white': theme === 'dark'}">
-                        <tr v-for="(log, index) in filteredLogs" :key="index">
-                            <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-xs" style="width: 350px; vertical-align:top">
-                                <div class="flex justify-between items-center">
-                                    <div class="text-left w-1/3">@{{ log.time }}</div>
-                                    <div :class="[getBadgeClass(log)]" class="w-2/3 rounded px-3 py-1 inline-block text-sm dark:text-white">
-                                        @{{ log.type }}
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-xs">
-                                <pre class="text-xs">@{{ jsonDecode(log.details) }}</pre>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-    </main>
+        </main>
+    </div>
 </div>
-<script>
-    new Vue({
-        el: '#app',
-        data: {
-            theme: 'dark',
-            logItemsDuringSession: 0,
-            pauseLogItems: false,
-            maxLogItems: 50,
-            activeChannels: true,
-            showLiveStatistics: true,
-            connected: false,
-            connecting: false,
-            autoRefresh: true,
-            refreshInterval: 3,
-            refreshTicker: null,
-            chart: null,
-            pusher: null,
-            app: 'Gis',
-            apps: @json($apps),
-            logs: [],
-            channels: [],
+<script type="importmap">
+  {
+    "imports": {
+      "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
+    }
+  }
+</script>
+<script type="module">
+    import { createApp } from 'vue';
+
+    const app = createApp({
+        data() {
+            return {
+                theme: 'dark',
+                logItemsDuringSession: 0,
+                pauseLogItems: false,
+                maxLogItems: 50,
+                activeChannels: true,
+                showLiveStatistics: true,
+                connected: false,
+                connecting: false,
+                autoRefresh: true,
+                refreshInterval: 3,
+                refreshTicker: null,
+                chart: null,
+                pusher: null,
+                app: 'Gis',
+                apps: @json($apps),
+                logs: [],
+                channels: [],
+            }
         },
         mounted() {
             this.app = this.apps[0] || null;
@@ -269,11 +283,6 @@
             filteredLogs() {
                 return this.logs.slice().reverse();
             },
-            style() {
-                return {
-                    '--color-theme': '#003a75',
-                };
-            },
         },
         methods: {
             jsonDecode(data) {
@@ -283,11 +292,11 @@
                         data.payload = JSON.parse(payload);
                     }
                 }
-              return data;
+                return data;
             },
             clear() {
-              this.logs = [];
-              this.logItemsDuringSession = 0;
+                this.logs = [];
+                this.logItemsDuringSession = 0;
             },
             connect() {
                 this.connecting = true;
@@ -473,6 +482,7 @@
             },
         },
     });
+    app.mount('#app');
 </script>
 </body>
 </html>
