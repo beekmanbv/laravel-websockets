@@ -27,11 +27,11 @@ class FetchChannels extends Controller
                 throw new HttpException(400, 'Request must be limited to presence channels in order to fetch user_count');
             }
 
-            if (in_array('socket_count', $attributes) &&  $request->has('starts_with')) {
-                if (! Str::startsWith($request->starts_with, ['presence-', 'private-', 'screencast-'])) {
-                    throw new HttpException(400, 'Requests must be limited to presence, private and screencast channels in order to fetch channel data');
-                }
-            }
+//            if (in_array('socket_count', $attributes) &&  $request->has('starts_with')) {
+//                if (! Str::startsWith($request->starts_with, ['presence-', 'private-', 'screencast-'])) {
+//                    throw new HttpException(400, 'Requests must be limited to presence, private and screencast channels in order to fetch channel data');
+//                }
+//            }
         }
 
         if (in_array('socket_count', $attributes)) {
