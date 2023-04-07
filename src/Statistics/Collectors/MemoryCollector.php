@@ -83,6 +83,19 @@ class MemoryCollector implements StatisticsCollector
             ->disconnection();
     }
 
+
+    /**
+     * Handle disconnections.
+     *
+     * @param  string|int  $appId
+     * @return void
+     */
+    public function channelChecked($appId)
+    {
+        $this->findOrMake($appId)
+            ->channelChecked();
+    }
+
     /**
      * Save all the stored statistics.
      *

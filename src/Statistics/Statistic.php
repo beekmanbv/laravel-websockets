@@ -21,6 +21,13 @@ class Statistic
     protected $currentConnectionsCount = 0;
 
     /**
+     * The current connections count ticker.
+     *
+     * @var int
+     */
+    protected $currentChecksCount = 0;
+
+    /**
      * The peak connections count ticker.
      *
      * @var int
@@ -138,6 +145,16 @@ class Statistic
     }
 
     /**
+     * Handle a new connection increment.
+     *
+     * @return void
+     */
+    public function channelChecked()
+    {
+        $this->currentChecksCount++;
+    }
+
+    /**
      * Handle a disconnection decrement.
      *
      * @return void
@@ -181,6 +198,7 @@ class Statistic
         $this->peakConnectionsCount = max(0, $currentConnectionsCount);
         $this->webSocketMessagesCount = 0;
         $this->apiMessagesCount = 0;
+        $this->currentChecksCount = 0;
     }
 
     /**
@@ -206,6 +224,7 @@ class Statistic
             'app_id' => $this->appId,
             'peak_connections_count' => $this->peakConnectionsCount,
             'websocket_messages_count' => $this->webSocketMessagesCount,
+            'checks_count' => $this->currentChecksCount,
             'api_messages_count' => $this->apiMessagesCount,
         ];
     }
