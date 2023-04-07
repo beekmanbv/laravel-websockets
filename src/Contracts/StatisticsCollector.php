@@ -38,6 +38,9 @@ interface StatisticsCollector
      */
     public function disconnection($appId);
 
+    
+    public function channelChecked($appId);
+
     /**
      * Save all the stored statistics.
      *

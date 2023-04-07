@@ -3,6 +3,7 @@
 namespace BeyondCode\LaravelWebSockets\API;
 
 use BeyondCode\LaravelWebSockets\Channels\Channel;
+use BeyondCode\LaravelWebSockets\Facades\StatisticsCollector;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use stdClass;
@@ -41,6 +42,11 @@ class FetchChannels extends Controller
                     if (count($channels)) {
 
                         if ($request->has('starts_with')) {
+                            try {
+                                StatisticsCollector::channelChecked($request->appId);
+                            } catch(\Throwable $e) {
+                                
+                            }
                             $channels = $channels->filter(function ($channel, $channelName) use ($request) {
                                 return Str::startsWith($channelName, $request->starts_with);
                             });

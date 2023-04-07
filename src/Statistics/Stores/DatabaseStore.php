@@ -110,6 +110,7 @@ class DatabaseStore implements StatisticsStore
             'timestamp' => (string) $statistic->created_at,
             'peak_connections_count' => $statistic->peak_connections_count,
             'websocket_messages_count' => $statistic->websocket_messages_count,
+            'checks_count' => $statistic->checks_count,
             'api_messages_count' => $statistic->api_messages_count,
         ];
     }
