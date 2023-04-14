@@ -96,6 +96,28 @@ class MemoryCollector implements StatisticsCollector
             ->channelChecked();
     }
 
+
+    /**
+     * Handle disconnections.
+     *
+     * @param  string|int  $appId
+     * @return void
+     */
+    public function channelCount($appId, array $channelSockets)
+    {
+        $connectedChannels = $channelSockets[$appId];
+
+        $count = 0;
+
+        foreach($connectedChannels as $channelName => $connections) {
+            if (!str_starts_with($channelName, 'private-websockets-dashboard')) {
+                $count++;
+            }
+        }
+        $this->findOrMake($appId)
+            ->channelCount($count);
+    }
+
     /**
      * Save all the stored statistics.
      *
@@ -105,15 +127,15 @@ class MemoryCollector implements StatisticsCollector
     {
         $this->getStatistics()->then(function ($statistics) {
             foreach ($statistics as $appId => $statistic) {
-                if (! $statistic->isEnabled()) {
-                    continue;
-                }
-
-                if ($statistic->shouldHaveTracesRemoved()) {
-                    $this->resetAppTraces($appId);
-
-                    continue;
-                }
+//                if (! $statistic->isEnabled()) {
+//                    continue;
+//                }
+//
+//                if ($statistic->shouldHaveTracesRemoved()) {
+//                    $this->resetAppTraces($appId);
+//
+//                    continue;
+//                }
 
                 $this->createRecord($statistic, $appId);
 

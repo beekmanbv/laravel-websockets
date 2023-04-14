@@ -49,6 +49,11 @@ class Statistic
     protected $apiMessagesCount = 0;
 
     /**
+     * @var int
+     */
+    protected $currentChannelsCount = 0;
+
+    /**
      * Create a new statistic.
      *
      * @param  string|int  $appId
@@ -154,6 +159,17 @@ class Statistic
         $this->currentChecksCount++;
     }
 
+
+    /**
+     * Handle a new connection increment.
+     *
+     * @return void
+     */
+    public function channelCount(int $count)
+    {
+        $this->currentChannelsCount = $count;
+    }
+
     /**
      * Handle a disconnection decrement.
      *
@@ -197,6 +213,7 @@ class Statistic
         $this->currentConnectionsCount = $currentConnectionsCount;
         $this->peakConnectionsCount = max(0, $currentConnectionsCount);
         $this->webSocketMessagesCount = 0;
+        $this->currentChannelsCount = 0;
         $this->apiMessagesCount = 0;
         $this->currentChecksCount = 0;
     }
@@ -224,6 +241,7 @@ class Statistic
             'app_id' => $this->appId,
             'peak_connections_count' => $this->peakConnectionsCount,
             'websocket_messages_count' => $this->webSocketMessagesCount,
+            'channels_count' => $this->currentChannelsCount,
             'checks_count' => $this->currentChecksCount,
             'api_messages_count' => $this->apiMessagesCount,
         ];

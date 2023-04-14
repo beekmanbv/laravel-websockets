@@ -7,6 +7,7 @@ use BeyondCode\LaravelWebSockets\Channels\PresenceChannel;
 use BeyondCode\LaravelWebSockets\Channels\PrivateChannel;
 use BeyondCode\LaravelWebSockets\Contracts\ChannelManager;
 use BeyondCode\LaravelWebSockets\Helpers;
+use BeyondCode\LaravelWebSockets\Facades\StatisticsCollector;
 use Carbon\Carbon;
 use Illuminate\Cache\ArrayLock;
 use Illuminate\Cache\ArrayStore;
@@ -339,6 +340,8 @@ class LocalChannelManager implements ChannelManager
     public function joinedChannel(ConnectionInterface $connection, string $channel): void
     {
         $this->channelSockets[$connection->app->id][$channel][$connection->socketId] = 1;
+
+        StatisticsCollector::channelCount($connection->app->id, $this->channelSockets);
     }
 
     /**
@@ -356,6 +359,8 @@ class LocalChannelManager implements ChannelManager
         if (count($this->channelSockets[$connection->app->id][$channel]) < 1) {
             unset($this->channelSockets[$connection->app->id][$channel]);
         }
+
+        StatisticsCollector::channelCount($connection->app->id, $this->channelSockets);
     }
 
     /**
