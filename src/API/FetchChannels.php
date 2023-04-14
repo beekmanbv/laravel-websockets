@@ -41,12 +41,9 @@ class FetchChannels extends Controller
                 ->then(function ($channels) use ($request) {
                     if (count($channels)) {
 
+                        StatisticsCollector::channelChecked($request->appId);
+
                         if ($request->has('starts_with')) {
-                            try {
-                                StatisticsCollector::channelChecked($request->appId);
-                            } catch(\Throwable $e) {
-                                
-                            }
                             $channels = $channels->filter(function ($channel, $channelName) use ($request) {
                                 return Str::startsWith($channelName, $request->starts_with);
                             });
