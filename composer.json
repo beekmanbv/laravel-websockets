@@ -36,7 +36,6 @@
         "guzzlehttp/psr7": "^1.7|^2.0",
         "pusher/pusher-php-server": "^6.0|^7.0",
         "react/promise": "^2.8",
-        "symfony/psr-http-message-bridge": "^1.1|^2.0"
     },
     "require-dev": {
         "clue/block-react": "^1.4",
