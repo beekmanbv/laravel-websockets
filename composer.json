@@ -42,7 +42,7 @@
         "illuminate/support": "^9.0|^10.0|^11.0",
         "pusher/pusher-php-server": "^6.0|^7.0",
         "react/promise": "^2.8",
-        "symfony/http-kernel": "^4.4|^5.4|^6.0",
+        "symfony/http-kernel": "^4.4|^5.4|^6.0|^7.0",
         "symfony/psr-http-message-bridge": "^1.1|^2.0"
     },
     "require-dev": {
